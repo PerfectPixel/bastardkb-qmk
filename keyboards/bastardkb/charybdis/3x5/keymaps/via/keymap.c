@@ -23,7 +23,7 @@
 enum charybdis_keymap_layers {
     LAYER_BASE = 0,
     LAYER_FUNCTION,
-    // LAYER_NAVIGATION,
+    LAYER_NAVIGATION,
     LAYER_MEDIA,
     LAYER_POINTER,
     LAYER_NUMERAL,
@@ -46,7 +46,7 @@ static uint16_t auto_pointer_layer_timer = 0;
 #endif     // CHARYBDIS_AUTO_POINTER_LAYER_TRIGGER_ENABLE
 
 #define ESC_MED LT(LAYER_MEDIA, KC_ESC)
-// #define SPC_NAV LT(LAYER_NAVIGATION, KC_SPC)
+#define SPC_NAV LT(LAYER_NAVIGATION, KC_SPC)
 #define TAB_FUN LT(LAYER_FUNCTION, KC_TAB)
 #define ENT_SYM LT(LAYER_SYMBOLS, KC_ENT)
 #define BSP_NUM LT(LAYER_NUMERAL, KC_BSPC)
@@ -65,7 +65,7 @@ static uint16_t auto_pointer_layer_timer = 0;
        KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P, \
        KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L, KC_QUOT, \
        KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH, \
-                      ESC_MED, KC_SPC, TAB_FUN, ENT_SYM, BSP_NUM
+                      ESC_MED, SPC_NAV, TAB_FUN, ENT_SYM, BSP_NUM
 
 /** Convenience row shorthands. */
 #define _______________DEAD_HALF_ROW_______________ XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX
@@ -274,10 +274,25 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     return false;
 }
 #endif
+bool key_held = false;
 
 // see: https://github.com/qmk/qmk_firmware/blob/master/docs/mod_tap.md
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
+        case SPC_NAV: // Intercept hold function to send Drag Scroll
+            if (!record->tap.count && record->event.pressed) {
+                charybdis_set_pointer_dragscroll_enabled(true);
+                key_held = true;
+                return false;
+            } else {
+                // Key released
+                if (key_held) {
+                    charybdis_set_pointer_dragscroll_enabled(false);
+                    key_held = false;
+                    return false;
+                }
+            }
+            return true;
         case TAB_FUN:
             if (!record->tap.count && record->event.pressed) {
                 tap_code16(KC_MCTL); // Intercept hold function to send Mission Control
