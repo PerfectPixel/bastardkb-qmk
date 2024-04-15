@@ -18,8 +18,7 @@
 
 #ifdef VIA_ENABLE
 /* VIA configuration. */
-// FIXME: should be 7
-#    define DYNAMIC_KEYMAP_LAYER_COUNT 8
+#    define DYNAMIC_KEYMAP_LAYER_COUNT 6
 #endif // VIA_ENABLE
 
 #ifndef __arm__

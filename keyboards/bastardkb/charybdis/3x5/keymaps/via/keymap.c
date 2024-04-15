@@ -20,11 +20,21 @@
 #    include "timer.h"
 #endif // CHARYBDIS_AUTO_POINTER_LAYER_TRIGGER_ENABLE
 
+enum custom_keycodes {
+  SP_SCRL = SAFE_RANGE
+};
+
+enum {
+    TAB_MCTL,
+};
+
+tap_dance_action_t tap_dance_actions[] = {
+    [TAB_MCTL] = ACTION_TAP_DANCE_DOUBLE(KC_TAB, KC_MCTL),
+};
+
 enum charybdis_keymap_layers {
     LAYER_BASE = 0,
     LAYER_BASE_COLEMAK,
-    LAYER_FUNCTION,
-    LAYER_NAVIGATION,
     LAYER_MEDIA,
     LAYER_POINTER,
     LAYER_NUMERAL,
@@ -47,13 +57,12 @@ static uint16_t auto_pointer_layer_timer = 0;
 #endif     // CHARYBDIS_AUTO_POINTER_LAYER_TRIGGER_ENABLE
 
 #define ESC_MED LT(LAYER_MEDIA, KC_ESC)
-#define SPC_NAV LT(LAYER_NAVIGATION, KC_SPC)
-#define TAB_FUN LT(LAYER_FUNCTION, KC_TAB)
 #define ENT_SYM LT(LAYER_SYMBOLS, KC_ENT)
 #define BSP_NUM LT(LAYER_NUMERAL, KC_BSPC)
 #define _L_PTR(KC) LT(LAYER_POINTER, KC)
 #define QWERTY DF(LAYER_BASE)
 #define COLEMAK DF(LAYER_BASE_COLEMAK)
+#define TD_TABM TD(TAB_MCTL)
 
 #ifndef POINTING_DEVICE_ENABLE
 #    define DRGSCRL KC_NO
@@ -68,14 +77,14 @@ static uint16_t auto_pointer_layer_timer = 0;
        KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P, \
        KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L, KC_QUOT, \
        KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH, \
-                      ESC_MED, SPC_NAV, TAB_FUN, ENT_SYM, BSP_NUM
+                      ESC_MED, SP_SCRL, TD_TABM, ENT_SYM, BSP_NUM
 
 /** \brief COLEMAK Mod-DH layout (3 rows, 10 columns). */
 #define LAYOUT_LAYER_BASE_COLEMAK                                                             \
        KC_Q,    KC_W,    KC_F,    KC_P,    KC_B,    KC_J,    KC_L,    KC_U,    KC_Y, KC_QUOT, \
        KC_A,    KC_R,    KC_S,    KC_T,    KC_G,    KC_M,    KC_N,    KC_E,    KC_I,    KC_O, \
        KC_Z,    KC_X,    KC_C,    KC_D,    KC_V,    KC_K,    KC_H, KC_COMM,  KC_DOT, KC_SLSH, \
-                      ESC_MED, SPC_NAV, TAB_FUN, ENT_SYM, BSP_NUM
+                      ESC_MED, SP_SCRL, TD_TABM, ENT_SYM, BSP_NUM
 
 /** Convenience row shorthands. */
 #define _______________DEAD_HALF_ROW_______________ XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX
@@ -91,20 +100,6 @@ static uint16_t auto_pointer_layer_timer = 0;
  *
  * See https://github.com/manna-harbour/miryoku for the original layout.
  */
-
-/**
- * \brief Function layer.c
- *
- * Secondary right-hand layer has function keys mirroring the numerals on the
- * primary layer with extras on the pinkie column, plus system keys on the inner
- * column. App is on the tertiary thumb key and other thumb keys are duplicated
- * from the base layer to enable auto-repeat.
- */
-/* #define LAYOUT_LAYER_FUNCTION                                                                 \
-    _______________DEAD_HALF_ROW_______________, KC_PSCR,   KC_F7,   KC_F8,   KC_F9,  KC_F12, \
-    ______________HOME_ROW_CAGS_L______________, KC_SCRL,   KC_F4,   KC_F5,   KC_F6,  KC_F11, \
-    _______________DEAD_HALF_ROW_______________, KC_PAUS,   KC_F1,   KC_F2,   KC_F3,  KC_F10, \
-                      XXXXXXX, XXXXXXX, _______, XXXXXXX, XXXXXXX */
 
 /**
  * \brief Media layer.
@@ -124,20 +119,6 @@ static uint16_t auto_pointer_layer_timer = 0;
     ______________HOME_ROW_CAGS_L______________, KC_CAPS, KC_LEFT, KC_DOWN, KC_RGHT, XXXXXXX, \
     _______, DRGSCRL, SNIPING, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, SNIPING, DRGSCRL, _______, \
                       KC_BTN2, KC_BTN1, KC_BTN3,  KC_ENT, KC_BSPC
-
-/**
- * \brief Navigation layer.
- *
- * Primary right-hand layer (left home thumb) is navigation and editing. Cursor
- * keys are on the home position, line and page movement below, clipboard above,
- * caps lock and insert on the inner column. Thumb keys are duplicated from the
- * base layer to avoid having to layer change mid edit and to enable auto-repeat.
- */
-/* #define LAYOUT_LAYER_NAVIGATION                                                               \
-    _______________DEAD_HALF_ROW_______________, _______________DEAD_HALF_ROW_______________, \
-    ______________HOME_ROW_CAGS_L______________, KC_CAPS, KC_LEFT, KC_DOWN,   KC_UP, KC_RGHT, \
-    _______________DEAD_HALF_ROW_______________,  KC_INS, KC_HOME, KC_PGDN, KC_PGUP,  KC_END, \
-                      XXXXXXX, _______, XXXXXXX,  KC_ENT, KC_BSPC */
 
 /**
  * \brief Numeral layout.
@@ -288,31 +269,22 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
 }
 #endif
 
-bool key_held = false;
-
 // see: https://github.com/qmk/qmk_firmware/blob/master/docs/mod_tap.md
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    static uint16_t sp_scrl_timer;
+
     switch (keycode) {
-        case SPC_NAV: // Intercept hold function to send Drag Scroll
-            if (!record->tap.count && record->event.pressed) {
+        case SP_SCRL:
+            if(record->event.pressed) {
+                sp_scrl_timer = timer_read();
                 charybdis_set_pointer_dragscroll_enabled(true);
-                key_held = true;
-                return false;
             } else {
-                // Key released
-                if (key_held) {
-                    charybdis_set_pointer_dragscroll_enabled(false);
-                    key_held = false;
-                    return false;
+                charybdis_set_pointer_dragscroll_enabled(false);
+                if (timer_elapsed(sp_scrl_timer) < TAPPING_TERM) {
+                    tap_code16(KC_SPC);
                 }
             }
-            return true;
-        case TAB_FUN:
-            if (!record->tap.count && record->event.pressed) {
-                tap_code16(KC_MCTL); // Intercept hold function to send Mission Control
-                return false;
-            }
-            return true;             // Return true for normal processing of tap keycode
+            return false; // We handled this keypress
     }
     return true;
 }
