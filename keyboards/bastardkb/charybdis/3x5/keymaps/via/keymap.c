@@ -200,8 +200,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [LAYER_BASE_COLEMAK] = LAYOUT_wrapper(
     POINTER_MOD(HOME_ROW_MOD_GACS(LAYOUT_LAYER_BASE_COLEMAK))
   ),
-//   [LAYER_FUNCTION] = LAYOUT_wrapper(LAYOUT_LAYER_FUNCTION),
-//   [LAYER_NAVIGATION] = LAYOUT_wrapper(LAYOUT_LAYER_NAVIGATION),
   [LAYER_MEDIA] = LAYOUT_wrapper(LAYOUT_LAYER_MEDIA),
   [LAYER_NUMERAL] = LAYOUT_wrapper(LAYOUT_LAYER_NUMERAL),
   [LAYER_POINTER] = LAYOUT_wrapper(LAYOUT_LAYER_POINTER),
@@ -249,22 +247,48 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 // rgb_matrix.c.
 void rgb_matrix_update_pwm_buffers(void);
 
+// Set breathing on boot
+void keyboard_post_init_user(void) {
+    rgb_matrix_mode_noeeprom(RGB_MATRIX_BREATHING);
+}
+
 // Layer state indicator
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
-    if (get_highest_layer(layer_state) > 0) {
-        uint8_t layer = get_highest_layer(layer_state);
-
-        for (uint8_t row = 0; row < MATRIX_ROWS; ++row) {
-            for (uint8_t col = 0; col < MATRIX_COLS; ++col) {
-                uint8_t index = g_led_config.matrix_co[row][col];
-
-                if (index >= led_min && index < led_max && index != NO_LED &&
-                keymap_key_to_keycode(layer, (keypos_t){col,row}) > KC_TRNS) {
-                    rgb_matrix_set_color(index, RGB_GREEN);
-                }
-            }
-        }
+    if (charybdis_get_pointer_dragscroll_enabled()) {
+        // HSV_BLUE
+        rgb_matrix_sethsv_noeeprom(170, 255, 64);
+        return false;
     }
+
+    switch(get_highest_layer(layer_state|default_layer_state)) {
+        case LAYER_MEDIA:
+            // HSV_YELLOW
+            rgb_matrix_sethsv_noeeprom(43, 255, 64);
+            break;
+
+        case LAYER_NUMERAL:
+            // HSV_PURPLE
+            rgb_matrix_sethsv_noeeprom(191, 255, 64);
+            break;
+
+        case LAYER_SYMBOLS:
+            // HSV_MAGENTA
+            rgb_matrix_sethsv_noeeprom(213, 255, 64);
+            break;
+
+        case LAYER_POINTER:
+            // HSV_BLUE
+            rgb_matrix_sethsv_noeeprom(170, 255, 64);
+            break;
+
+        case LAYER_BASE_COLEMAK:
+        case LAYER_BASE:
+        default:
+            // HSV_GREEN
+            rgb_matrix_sethsv_noeeprom(85, 255, 64);
+            break;
+    }
+
     return false;
 }
 #endif
