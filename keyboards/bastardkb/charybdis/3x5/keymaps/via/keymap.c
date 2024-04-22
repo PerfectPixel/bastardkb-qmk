@@ -277,30 +277,9 @@ void matrix_scan_user(void) {
 #    ifdef CHARYBDIS_AUTO_SNIPING_ON_LAYER
 layer_state_t layer_state_set_user(layer_state_t state) {
     charybdis_set_pointer_sniping_enabled(layer_state_cmp(state, CHARYBDIS_AUTO_SNIPING_ON_LAYER));
-    return state;
-}
-#    endif // CHARYBDIS_AUTO_SNIPING_ON_LAYER
-#endif     // POINTING_DEVICE_ENABLE
 
-#ifdef RGB_MATRIX_ENABLE
-// Forward-declare this helper function since it is defined in
-// rgb_matrix.c.
-void rgb_matrix_update_pwm_buffers(void);
-
-// Set breathing on boot
-void keyboard_post_init_user(void) {
-    rgb_matrix_mode_noeeprom(RGB_MATRIX_BREATHING);
-}
-
-// Layer state indicator
-bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
-    if (charybdis_get_pointer_dragscroll_enabled()) {
-        // HSV_BLUE
-        rgb_matrix_sethsv_noeeprom(170, 255, 64);
-        return false;
-    }
-
-    switch(get_highest_layer(layer_state|default_layer_state)) {
+    #ifdef RGB_MATRIX_ENABLE
+    switch(get_highest_layer(state)) {
         case LAYER_MEDIA:
             // HSV_YELLOW
             rgb_matrix_sethsv_noeeprom(43, 255, 64);
@@ -327,6 +306,29 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
             // HSV_GREEN
             rgb_matrix_sethsv_noeeprom(85, 255, 64);
             break;
+    }
+    #endif
+
+    return state;
+}
+#    endif // CHARYBDIS_AUTO_SNIPING_ON_LAYER
+#endif     // POINTING_DEVICE_ENABLE
+
+#ifdef RGB_MATRIX_ENABLE
+// Forward-declare this helper function since it is defined in
+// rgb_matrix.c.
+void rgb_matrix_update_pwm_buffers(void);
+
+// Set breathing on boot
+void keyboard_post_init_user(void) {
+    rgb_matrix_mode_noeeprom(RGB_MATRIX_BREATHING);
+}
+
+// rgb indicator for drag scroll
+bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+    if (charybdis_get_pointer_dragscroll_enabled()) {
+        // HSV_BLUE
+        rgb_matrix_sethsv_noeeprom(170, 255, 64);
     }
 
     return false;
