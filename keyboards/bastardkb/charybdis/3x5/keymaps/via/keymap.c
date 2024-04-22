@@ -32,6 +32,46 @@ tap_dance_action_t tap_dance_actions[] = {
     [TAB_MCTL] = ACTION_TAP_DANCE_DOUBLE(KC_TAB, KC_MCTL),
 };
 
+/*        34 KEY MATRIX / LAYOUT MAPPING
+
+  ╭─────────────────────┬─────────────────────╮
+  │ LT4 LT3 LT2 LT1 LT0 │ RT0 RT1 RT2 RT3 RT4 │
+  │ LM4 LM3 LM2 LM1 LM0 │ RM0 RM1 RM2 RM3 RM4 │
+  │ LB4 LB3 LB2 LB1 LB0 │ RB0 RB1 RB2 RB3 RB4 │
+  ╰───────╮ LH2 LH1 LH0 │ RH0 RH1 ╭───────────╯
+          ╰─────────────┴─────────╯             */
+
+enum combo_events {
+  L_BRACKET_COMBO,  // LT3 and LM3 => [
+  R_BRACKET_COMBO,  // RT3 and RM3 => ]
+  L_PAREN_COMBO,    // LT2 and LM2 => (
+  R_PAREN_COMBO,    // RT2 and RM2 => )
+  L_BRACE_COMBO,    // LT1 and LM1 => {
+  R_BRACE_COMBO,    // RT1 and RM1 => }
+  L_ABK_COMBO,      // LT0 and LM0 => <
+  R_ABK_COMBO,      // RT0 and RM0 => >
+};
+
+const uint16_t l_bracket_combo[] PROGMEM = {KC_W, LALT_T(KC_R), COMBO_END};
+const uint16_t r_bracket_combo[] PROGMEM = {KC_Y, LALT_T(KC_I), COMBO_END};
+const uint16_t l_paren_combo[] PROGMEM = {KC_F, LGUI_T(KC_S), COMBO_END};
+const uint16_t r_paren_combo[] PROGMEM = {KC_U, RGUI_T(KC_E), COMBO_END};
+const uint16_t l_brace_combo[] PROGMEM = {KC_P, LSFT_T(KC_T), COMBO_END};
+const uint16_t r_brace_combo[] PROGMEM = {KC_L, RSFT_T(KC_N), COMBO_END};
+const uint16_t l_abk_combo[] PROGMEM = {KC_B, KC_G, COMBO_END};
+const uint16_t r_abk_combo[] PROGMEM = {KC_J, KC_M, COMBO_END};
+
+combo_t key_combos[] = {
+    [L_BRACKET_COMBO] = COMBO(l_bracket_combo, KC_LBRC),
+    [R_BRACKET_COMBO] = COMBO(r_bracket_combo, KC_RBRC),
+    [L_PAREN_COMBO] = COMBO(l_paren_combo, KC_LPRN),
+    [R_PAREN_COMBO] = COMBO(r_paren_combo, KC_RPRN),
+    [L_BRACE_COMBO] = COMBO(l_brace_combo, KC_LCBR),
+    [R_BRACE_COMBO] = COMBO(r_brace_combo, KC_RCBR),
+    [L_ABK_COMBO] = COMBO(l_abk_combo, KC_LABK),
+    [R_ABK_COMBO] = COMBO(r_abk_combo, KC_RABK),
+};
+
 enum charybdis_keymap_layers {
     LAYER_BASE = 0,
     LAYER_BASE_COLEMAK,
