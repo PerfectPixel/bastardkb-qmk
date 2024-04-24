@@ -322,16 +322,8 @@ void rgb_matrix_update_pwm_buffers(void);
 // Set breathing on boot
 void keyboard_post_init_user(void) {
     rgb_matrix_mode_noeeprom(RGB_MATRIX_BREATHING);
-}
-
-// rgb indicator for drag scroll
-bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
-    if (charybdis_get_pointer_dragscroll_enabled()) {
-        // HSV_BLUE
-        rgb_matrix_sethsv_noeeprom(170, 255, 64);
-    }
-
-    return false;
+    // HSV_GREEN
+    rgb_matrix_sethsv_noeeprom(85, 255, 64);
 }
 #endif
 
@@ -344,8 +336,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             if(record->event.pressed) {
                 sp_scrl_timer = timer_read();
                 charybdis_set_pointer_dragscroll_enabled(true);
+                // HSV_BLUE
+                rgb_matrix_sethsv_noeeprom(170, 255, 64);
             } else {
                 charybdis_set_pointer_dragscroll_enabled(false);
+                // HSV_GREEN
+                rgb_matrix_sethsv_noeeprom(85, 255, 64);
                 if (timer_elapsed(sp_scrl_timer) < TAPPING_TERM) {
                     tap_code16(KC_SPC);
                 }
