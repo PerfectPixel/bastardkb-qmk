@@ -50,6 +50,12 @@ enum combo_events {
   R_BRACE_COMBO,    // RT1 and RM1 => }
   L_ABK_COMBO,      // LT0 and LM0 => <
   R_ABK_COMBO,      // RT0 and RM0 => >
+  L_MOUSE1_COMBO,   // LB1 AND LB2 => Mouse 1
+  L_MOUSE2_COMBO,   // LB2 AND LB3 => Mouse 2
+  L_MOUSE3_COMBO,   // LB1 AND LB3 => Mouse 3
+  R_MOUSE1_COMBO,   // RB1 AND RB2 => Mouse 1
+  R_MOUSE2_COMBO,   // RB2 AND RB3 => Mouse 2
+  R_MOUSE3_COMBO,   // RB1 AND RB3 => Mouse 3
 };
 
 const uint16_t l_bracket_combo[] PROGMEM = {KC_W, LALT_T(KC_R), COMBO_END};
@@ -60,6 +66,12 @@ const uint16_t l_brace_combo[] PROGMEM = {KC_P, LSFT_T(KC_T), COMBO_END};
 const uint16_t r_brace_combo[] PROGMEM = {KC_L, RSFT_T(KC_N), COMBO_END};
 const uint16_t l_abk_combo[] PROGMEM = {KC_B, KC_G, COMBO_END};
 const uint16_t r_abk_combo[] PROGMEM = {KC_J, KC_M, COMBO_END};
+const uint16_t l_mouse1_combo[] PROGMEM = {KC_C, KC_D, COMBO_END};
+const uint16_t l_mouse2_combo[] PROGMEM = {KC_X, KC_C, COMBO_END};
+const uint16_t l_mouse3_combo[] PROGMEM = {KC_X, KC_D, COMBO_END};
+const uint16_t r_mouse1_combo[] PROGMEM = {KC_H, KC_COMM, COMBO_END};
+const uint16_t r_mouse2_combo[] PROGMEM = {KC_COMM, KC_DOT, COMBO_END};
+const uint16_t r_mouse3_combo[] PROGMEM = {KC_H, KC_DOT, COMBO_END};
 
 combo_t key_combos[] = {
     [L_BRACKET_COMBO] = COMBO(l_bracket_combo, KC_LBRC),
@@ -70,6 +82,13 @@ combo_t key_combos[] = {
     [R_BRACE_COMBO] = COMBO(r_brace_combo, KC_RCBR),
     [L_ABK_COMBO] = COMBO(l_abk_combo, KC_LABK),
     [R_ABK_COMBO] = COMBO(r_abk_combo, KC_RABK),
+    [L_MOUSE1_COMBO] = COMBO(l_mouse1_combo, KC_BTN1),
+    [L_MOUSE2_COMBO] = COMBO(l_mouse2_combo, KC_BTN2),
+    [L_MOUSE3_COMBO] = COMBO(l_mouse3_combo, KC_BTN3),
+    [R_MOUSE1_COMBO] = COMBO(r_mouse1_combo, KC_BTN1),
+    [R_MOUSE2_COMBO] = COMBO(r_mouse2_combo, KC_BTN2),
+    [R_MOUSE3_COMBO] = COMBO(r_mouse3_combo, KC_BTN3),
+};
 };
 
 enum charybdis_keymap_layers {
