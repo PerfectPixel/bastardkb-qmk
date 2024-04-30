@@ -89,6 +89,17 @@ combo_t key_combos[] = {
     [R_MOUSE2_COMBO] = COMBO(r_mouse2_combo, KC_BTN2),
     [R_MOUSE3_COMBO] = COMBO(r_mouse3_combo, KC_BTN3),
 };
+
+// key overrides
+const key_override_t dot_key_override =
+    ko_make_basic(MOD_MASK_SHIFT, KC_DOT, KC_COLN);  // Shift . is :
+const key_override_t comm_key_override =
+    ko_make_basic(MOD_MASK_SHIFT, KC_COMM, KC_SCLN); // Shift , is ;
+
+const key_override_t** key_overrides = (const key_override_t*[]){
+    &dot_key_override,
+    &comm_key_override,
+    NULL
 };
 
 enum charybdis_keymap_layers {
