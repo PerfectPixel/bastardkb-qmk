@@ -103,8 +103,8 @@ const key_override_t** key_overrides = (const key_override_t*[]){
 };
 
 enum charybdis_keymap_layers {
-    LAYER_BASE = 0,
-    LAYER_BASE_COLEMAK,
+    LAYER_BASE_COLEMAK = 0,
+    LAYER_BASE_QWERTY,
     LAYER_MEDIA,
     LAYER_POINTER,
     LAYER_NUMERAL,
@@ -130,7 +130,7 @@ static uint16_t auto_pointer_layer_timer = 0;
 #define ENT_SYM LT(LAYER_SYMBOLS, KC_ENT)
 #define BSP_NUM LT(LAYER_NUMERAL, KC_BSPC)
 #define _L_PTR(KC) LT(LAYER_POINTER, KC)
-#define QWERTY DF(LAYER_BASE)
+#define QWERTY DF(LAYER_BASE_QWERTY)
 #define COLEMAK DF(LAYER_BASE_COLEMAK)
 #define TD_TABM TD(TAB_MCTL)
 
@@ -143,7 +143,7 @@ static uint16_t auto_pointer_layer_timer = 0;
 
 // clang-format off
 /** \brief QWERTY layout (3 rows, 10 columns). */
-#define LAYOUT_LAYER_BASE                                                                     \
+#define LAYOUT_LAYER_BASE_QWERTY                                                              \
        KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P, \
        KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L, KC_QUOT, \
        KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH, \
@@ -264,8 +264,8 @@ static uint16_t auto_pointer_layer_timer = 0;
 #define LAYOUT_wrapper(...) LAYOUT(__VA_ARGS__)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-  [LAYER_BASE] = LAYOUT_wrapper(
-    POINTER_MOD(HOME_ROW_MOD_GACS(LAYOUT_LAYER_BASE))
+  [LAYER_BASE_QWERTY] = LAYOUT_wrapper(
+    POINTER_MOD(HOME_ROW_MOD_GACS(LAYOUT_LAYER_BASE_QWERTY))
   ),
   [LAYER_BASE_COLEMAK] = LAYOUT_wrapper(
     POINTER_MOD(HOME_ROW_MOD_GACS(LAYOUT_LAYER_BASE_COLEMAK))
@@ -331,7 +331,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
             break;
 
         case LAYER_BASE_COLEMAK:
-        case LAYER_BASE:
+        case LAYER_BASE_QWERTY:
         default:
             // HSV_GREEN
             rgb_matrix_sethsv_noeeprom(85, 255, 64);
