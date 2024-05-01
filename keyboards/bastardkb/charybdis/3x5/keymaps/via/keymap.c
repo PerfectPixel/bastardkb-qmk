@@ -380,3 +380,21 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     }
     return true;
 }
+
+bool get_custom_auto_shifted_key(uint16_t keycode, keyrecord_t *record) {
+    switch(keycode) {
+        case LCTL_T(KC_A):
+        case LALT_T(KC_R):
+        case LGUI_T(KC_S):
+        case LSFT_T(KC_T):
+        case RSFT_T(KC_N):
+        case RGUI_T(KC_E):
+        case LALT_T(KC_I):
+        case RCTL_T(KC_O):
+        case _L_PTR(KC_Z):
+        case _L_PTR(KC_SLSH):
+            return true;
+        default:
+            return false;
+    }
+}
